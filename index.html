@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TrainerBot • Ворк-аут</title>
+<style>
+  :root{--bg:#000;--panel:#111;--text:#ffd700;--muted:#cfc08a;--soft:#1a1a1a;--radius:16px;--border:#2b2b2b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,system-ui,Segoe UI,Roboto,sans-serif;}
+  header{position:sticky;top:0;background:#0a0a0a;border-bottom:1px solid var(--border);padding:12px 14px;z-index:10;display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap}
+  .tab{background:#0f0f0f;border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:10px;font-weight:700}
+  .tab.active{background:var(--text);color:#000}
+  main{padding:16px;display:grid;gap:16px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 20px rgba(255,215,0,.05)}
+  .card-head{display:flex;align-items:center;gap:10px;padding:14px 14px 8px}
+  .thumb{width:42px;height:42px;border-radius:10px;background:#0f0f0f;border:1px solid var(--border);display:grid;place-items:center;font-weight:700}
+  .title{font-size:16px;font-weight:700}
+  .meta{color:var(--muted);font-size:12px}
+  .media{background:#000}
+  .media video{width:100%;max-height:220px;background:#000;border:0;display:block}
+  .body{padding:14px;display:grid;gap:12px}
+  .sets{display:grid;gap:8px}
+  .set-row{display:grid;grid-template-columns:28px 1fr 1fr;gap:10px;align-items:center}
+  .badge{width:28px;height:28px;border-radius:8px;background:#0c0c0c;border:1px solid var(--border);display:grid;place-items:center;color:#bba24a;font-weight:700}
+  .input{display:flex;gap:6px;align-items:center;background:var(--soft);border:1px solid var(--border);border-radius:10px;padding:10px}
+  .input input{width:100%;background:transparent;border:0;outline:0;color:var(--text);font-size:15px}
+  .suffix{color:#bba24a;font-size:12px;text-transform:uppercase}
+  .row-actions{display:flex;gap:8px}
+  button{border:0;border-radius:12px;padding:10px 14px;font-weight:700}
+  .ghost{background:#0f0f0f;color:#bba24a;border:1px solid var(--border)}
+  .primary{background:var(--text);color:#000}
+  .footer{position:sticky;bottom:0;padding:12px 16px;background:linear-gradient(0deg,#0a0a0a,rgba(10,10,10,.9));border-top:1px solid var(--border);display:flex;gap:10px}
+  .note{font-size:12px;color:#a08f49;text-align:center;margin:6px 0 14px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="tabs">
+    <button class="tab active" data-day="1">День 1</button>
+    <button class="tab" data-day="2">День 2</button>
+    <button class="tab" data-day="3">День 3</button>
+  </div>
+  <button class="tab" id="saveAll">Сохранить</button>
+</header>
+
+<main id="cards"></main>
+
+<div class="note">Видео — локальные MP4/WebM/GIF. Залейте свои файлы в <b>assets/</b> репозитория и пропишите пути ниже.</div>
+<div class="footer">
+  <button class="ghost" id="clearLocal">Очистить локально</button>
+  <button class="primary" id="sendToBot">Отправить в бота</button>
+</div>
+
+<script>
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if(tg){ tg.expand(); }
+
+  // === Конфиг программы: упражнения и пути к файлам (без YouTube) ===
+  // Залейте свои ролики/гифки в /assets и поменяйте src.
+  const PROGRAM = {
+    "1": [
+      {title:"Жим штанги лёжа", meta:"3 подхода • 8–10 повторений", exercise:"Жим штанги лёжа", src:"assets/bench.mp4", sets:3},
+      {title:"Тяга блока к поясу", meta:"3 подхода • 8–10 повторений", exercise:"Тяга блока к поясу", src:"assets/row_cable.mp4", sets:3},
+      {title:"Жим ногами", meta:"3 подхода • 8–10", exercise:"Жим ногами", src:"assets/legpress.mp4", sets:3},
+      {title:"Подъём штанги на бицепс", meta:"2 подхода • 12–16", exercise:"Подъём штанги на бицепс", src:"assets/biceps_bar.mp4", sets:2},
+      {title:"Жим в тренажёре для плеч", meta:"2 подхода • 12–16", exercise:"Жим в тренажёре для плеч", src:"assets/shoulder_machine.mp4", sets:2},
+      {title:"Разгибание трицепса в блоке", meta:"2 подхода • 12–16", exercise:"Разгибание трицепса в блоке", src:"assets/triceps_rope.mp4", sets:2}
+    ],
+    "2": [
+      {title:"Жим штанги лёжа на наклонной 45°", meta:"3 подхода • 8–10", exercise:"Жим штанги лёжа на наклонной 45°", src:"assets/incline_bench.mp4", sets:3},
+      {title:"Тяга блока обратным хватом", meta:"3 подхода • 8–10", exercise:"Тяга блока обратным хватом", src:"assets/lat_reverse.mp4", sets:3},
+      {title:"Разгибание ног в тренажёре", meta:"3 подхода • 8–10", exercise:"Разгибание ног в тренажёре", src:"assets/leg_extension.mp4", sets:3},
+      {title:"Сгибания рук в кроссовере", meta:"2 подхода • 12–16", exercise:"Сгибания рук в кроссовере", src:"assets/biceps_cable.mp4", sets:2},
+      {title:"Разведения в стороны", meta:"2 подхода • 12–16", exercise:"Разведения в стороны", src:"assets/lateral_raise.mp4", sets:2},
+      {title:"Отжимания на брусьях", meta:"2 подхода • 12–16", exercise:"Отжимания на брусьях", src:"assets/dips.mp4", sets:2}
+    ],
+    "3": [
+      {title:"Отжимания с ногами на возвышении", meta:"4 подхода • максимум", exercise:"Отжимания с ногами на возвышении", src:"assets/decline_pushup.mp4", sets:4},
+      {title:"Жим гантелей лёжа на полу", meta:"3 подхода • 8–12", exercise:"Жим гантелей лёжа на полу", src:"assets/db_floor_press.mp4", sets:3},
+      {title:"Тяга гантелей в наклоне", meta:"3 подхода • 8–12", exercise:"Тяга гантелей в наклоне", src:"assets/db_row.mp4", sets:3},
+      {title:"Отжимания узким хватом", meta:"3 подхода • максимум", exercise:"Отжимания узким хватом", src:"assets/close_pushup.mp4", sets:3},
+      {title:"Подъём гантелей на бицепс", meta:"3 подхода • 12", exercise:"Подъём гантелей на бицепс", src:"assets/db_curl.mp4", sets:3},
+      {title:"Разведения в наклоне", meta:"3 подхода • 12–15", exercise:"Разведения в наклоне", src:"assets/rear_delt_raise.mp4", sets:3},
+      {title:"Планка с касанием плеч", meta:"3×40–60 сек", exercise:"Планка с касанием плеч", src:"assets/plank_shoulder_tap.mp4", sets:3}
+    ]
+  };
+
+  // === Рендер карточек ===
+  const cards = document.getElementById('cards');
+  const tabs = document.querySelectorAll('.tab[data-day]');
+  let currentDay = "1";
+
+  tabs.forEach(t=>t.onclick=()=>{ tabs.forEach(x=>x.classList.remove('active')); t.classList.add('active'); currentDay=t.dataset.day; renderDay(); });
+
+  function setRow(idx, w='', r=''){
+    const row = document.createElement('div');
+    row.className = 'set-row';
+    row.innerHTML = `
+      <div class="badge">${idx}</div>
+      <label class="input"><input type="number" inputmode="decimal" step="0.5" placeholder="КГ" value="${w}"><span class="suffix">кг</span></label>
+      <label class="input"><input type="number" inputmode="numeric" step="1" placeholder="раз" value="${r}"><span class="suffix">раз</span></label>`;
+    return row;
+  }
+
+  function card(ex){
+    const wrap = document.createElement('section');
+    wrap.className = 'card';
+    wrap.dataset.exercise = ex.exercise;
+
+    wrap.innerHTML = `
+      <div class="card-head">
+        <div class="thumb">${ex.title.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+        <div><div class="title">${ex.title}</div><div class="meta">${ex.meta}</div></div>
+      </div>
+      <div class="media">${ex.src ? `<video src="${ex.src}" controls playsinline preload="metadata"></video>` : ''}</div>
+      <div class="body">
+        <div class="sets"></div>
+        <div class="row-actions">
+          <button class="ghost add">+ Подход</button>
+          <button class="ghost del">− Удалить</button>
+        </div>
+      </div>`;
+
+    const setsBox = wrap.querySelector('.sets');
+    const key = storageKey(ex.exercise);
+    const saved = JSON.parse(localStorage.getItem(key) || '[]');
+    const count = saved.length ? saved.length : ex.sets;
+    for(let i=0;i<count;i++){
+      const vals = saved[i] || {};
+      setsBox.appendChild(setRow(i+1, vals.weight||'', vals.reps||''));
+    }
+    wrap.querySelector('.add').onclick = ()=> setsBox.appendChild(setRow(setsBox.children.length+1));
+    wrap.querySelector('.del').onclick = ()=> { if(setsBox.children.length>1) setsBox.lastElementChild.remove(); };
+    return wrap;
+  }
+
+  function storageKey(ex){ return `trainerbot_${currentDay}_${ex.replace(/\s+/g,'_')}`; }
+
+  function renderDay(){
+    cards.innerHTML = '';
+    (PROGRAM[currentDay]||[]).forEach(ex => cards.appendChild(card(ex)));
+  }
+
+  renderDay();
+
+  // Сбор данных со всех карточек на экране
+  function collect(){
+    const out = [];
+    document.querySelectorAll('.card').forEach(card => {
+      const exercise = card.dataset.exercise;
+      const rows = card.querySelectorAll('.set-row');
+      const key = storageKey(exercise);
+      const save = [];
+      rows.forEach((row, i) => {
+        const [wField, rField] = row.querySelectorAll('input');
+        const weight = wField.value.trim();
+        const reps = rField.value.trim();
+        if(weight && reps){
+          const item = {day: currentDay, exercise, set: i+1, weight, reps};
+          out.push(item);
+          save.push({weight, reps});
+        }
+      });
+      localStorage.setItem(key, JSON.stringify(save));
+    });
+    return out;
+  }
+
+  document.getElementById('saveAll').onclick = ()=>{
+    const data = collect();
+    alert('Сохранил локально: ' + data.length + ' подход(ов).');
+  };
+
+  document.getElementById('clearLocal').onclick = ()=>{
+    Object.keys(localStorage).filter(k=>k.startsWith('trainerbot_')).forEach(k=>localStorage.removeItem(k));
+    renderDay();
+  };
+
+  document.getElementById('sendToBot').onclick = ()=>{
+    const data = collect();
+    if(!data.length) { alert('Заполни хотя бы один подход.'); return; }
+    if(tg){ tg.sendData(JSON.stringify(data)); tg.close(); }
+    else { alert('WebApp API недоступен — открой через кнопку бота.'); }
+  };
+</script>
+</body>
+</html>
