@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Full Body • 4-недельная периодизация</title>
+<style>
+:root{--bg:#0b0b0e;--panel:#15161a;--panel2:#121317;--soft:#0e0f12;--border:#2b2f36;--text:#ffd700;--muted:#b9aa68;--white:#f4f4f4;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#0b0b0e,rgba(11,11,14,.92));border-bottom:1px solid var(--border);padding:12px 16px 6px}
+.h1{margin:0;font-size:20px;font-weight:800}.sub{margin-top:6px;color:var(--muted);font-size:12px}
+.controls{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+select,.tab{background:var(--panel2);color:var(--white);border:1px solid var(--border);border-radius:12px;padding:8px 12px;font-weight:800}
+.tab.active{background:var(--text);color:#000;border-color:var(--text)}
+main{padding:14px;display:grid;gap:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.25)}
+.head{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 8px}
+.left{display:flex;gap:10px;align-items:center}
+.thumb{width:44px;height:44px;border-radius:12px;background:var(--soft);border:1px solid var(--border);display:grid;place-items:center}
+.title{font-weight:800;font-size:16px}.meta{font-size:12px;color:var(--muted)}
+.hint{font-size:12px;color:#aeb3bb;margin-top:4px}
+.video{background:#000}.video iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
+.body{padding:14px;display:grid;gap:12px}.history{font-weight:700;color:#9aa0a6;font-size:13px}
+.date{font-size:14px;margin-top:8px;margin-bottom:6px;color:#d0d0d0}
+.sets{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:34px 1fr 1fr 100px 34px;gap:10px;align-items:center}
+.badge{height:40px;border-radius:12px;border:1px solid var(--border);background:var(--soft);display:grid;place-items:center;color:var(--text);font-weight:800}
+.input{display:flex;gap:6px;align-items:center;background:#101215;border:1px solid var(--border);border-radius:12px;padding:6px}
+.input input, .input select{
+  width:100%;
+  background:#1c1c20;   /* контрастный фон для читаемости */
+  border:1px solid #444;
+  border-radius:8px;
+  outline:none;
+  color:#ffd700;         /* золотой текст */
+  font-size:18px;        /* крупный шрифт */
+  font-weight:700;
+  text-align:center;
+  padding:6px 8px;
+  min-width:60px;
+}
+.suffix{color:var(--muted);font-size:12px;text-transform:uppercase}
+.check{width:24px;height:24px;border-radius:8px;border:1px solid var(--border);display:grid;place-items:center;cursor:pointer}
+.check input{appearance:none;width:18px;height:18px;border-radius:5px;background:#14161a;border:1px solid #2f3340}
+.check input:checked{background:var(--text);border-color:var(--text)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--border);background:var(--panel2);color:#fff;border-radius:12px;padding:10px 14px;font-weight:800}
+.btn.gold{background:var(--text);border-color:var(--text);color:#000}
+.bar{position:sticky;bottom:0;z-index:15;background:linear-gradient(0deg,#0b0b0e,rgba(11,11,14,.92));border-top:1px solid var(--border);padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.note{font-size:12px;color:var(--muted);text-align:center;margin:4px 0 12px}
+.sum{font-weight:800;color:#ffd700}
+.weeksum{font-weight:700;color:#c8b767;font-size:13px}
+.tech{background:#0f1014;border-top:1px dashed var(--border);padding:10px 14px;display:none}
+.tech p{margin:6px 0 0 0;color:#cfcfcf;font-size:13px;line-height:1.35}
+.tech b{color:#ffd700}
+.techBtn{border:1px dashed var(--border);background:#0f1014;color:#ffd700;border-radius:10px;padding:6px 10px;font-weight:800;font-size:12px}
+.techWrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header>
+  <div class="h1">Full Body — Верх в приоритете</div>
+  <div class="sub">3 дня (Зал • Зал • Дом) • 4-недельная периодизация • без осевых нагрузок</div>
+  <div class="controls">
+    <button class="tab active" data-day="1">День 1</button>
+    <button class="tab" data-day="2">День 2</button>
+    <button class="tab" data-day="3">День 3</button>
+    <select id="weekSelect" title="Выбери неделю">
+      <option value="1">Неделя 1 — втягивающая</option>
+      <option value="2">Неделя 2 — нагрузочная</option>
+      <option value="3">Неделя 3 — пиковая</option>
+      <option value="4">Неделя 4 — разгрузка</option>
+    </select>
+  </div>
+</header>
+<main id="root"></main>
+<div class="note">Недели: RIR 1–2 → 0–1 → 0 (пик) → 2–3 (делоад). Нед.2: +5%/ +1; Нед.3: +10%/ +1–2; Нед.4: −10–20% и −1 подход.</div>
+<div class="bar">
+  <div>
+    <div class="sum" id="summary">Тоннаж: 0 кг • Сеты (вып.): 0</div>
+    <div class="weeksum" id="weekSummary">Итого за неделю: 0 кг • сохранённых сетов: 0</div>
+  </div>
+  <div>
+    <button class="btn" id="clearBtn">Очистить день</button>
+    <button class="btn gold" id="saveBtn">Сохранить и отправить</button>
+  </div>
+</div>
+
+<script>
+/* ===== Подсказки техники ===== */
+const TECH = {
+  "Жим штанги лёжа":[
+    "Лопатки сведены, грудь вверх, пятки прижаты.",
+    "Хват чуть шире плеч; предплечья вертикальны внизу.",
+    "Траектория — дуга к нижнему краю груди.",
+    "Опускание контролируемое; касание без отскока; выжим без мостика."
+  ],
+  "Тяга блока к поясу":[
+    "Спина ровная, лёгкий наклон, грудь вперёд.",
+    "Тянем локтями к тазу, корпус не дёргать.",
+    "В конце — сведение лопаток и пауза 0.5с."
+  ],
+  "Жим ногами":[
+    "Стопы на ширине плеч, носки слегка наружу.",
+    "Поясница прижата, не выпрямляй колени «в замок».",
+    "Глубина ~90–110° в колене."
+  ],
+  "Подъём штанги на бицепс":[
+    "Локти у корпуса, плечи не двигаем.",
+    "Полная амплитуда; без читинга; темп 2–0–1."
+  ],
+  "Жим в тренажёре для плеч":[
+    "Спина и таз прижаты; локти под грифом.",
+    "Рабочая амплитуда без болезненности."
+  ],
+  "Разгибание трицепса в блоке (канат)":[
+    "Локти у корпуса; плечо неподвижно.",
+    "Внизу слегка разведи канаты, пауза 0.5с."
+  ],
+  "Жим штанги лёжа на наклонной 45°":[
+    "Лопатки сведены; жми по диагонали вверх.",
+    "Касайся верхней части груди; не запирай локти."
+  ],
+  "Тяга блока обратным хватом":[
+    "Хват на ширине плеч; локти вдоль корпуса.",
+    "Фокус на нижние широчайшие; сведение лопаток в конце."
+  ],
+  "Разгибание ног в тренажёре":[
+    "Ось колена совпадает с осью тренажёра.",
+    "Пауза вверху; вниз — подконтрольно."
+  ],
+  "Сгибания рук в кроссовере (бицепс)":[
+    "Плечи неподвижны; сгибание только в локте.",
+    "Эксцентрика 2–3с; без раскачки."
+  ],
+  "Разведения гантелей в стороны":[
+    "Мягкий сгиб локтя; плечо слегка вперёд и вниз.",
+    "Не поднимай выше уровня плеч; темп подконтрольный."
+  ],
+  "Отжимания на брусьях":[
+    "Корпус вперёд (грудной вариант) или ближе к вертикали (трицепс).",
+    "Локти 45–60°; глубина комфортная; без боли в плечах."
+  ],
+  "Отжимания с ногами на возвышении":[
+    "Корпус одной линией, взгляд вниз.",
+    "Касание грудью/2см до пола, без провалов в пояснице."
+  ],
+  "Жим гантелей лёжа на полу":[
+    "Локти ~45° к корпусу; нейтральные запястья.",
+    "Пауза на полу; без отскока."
+  ],
+  "Тяга гантелей к поясу":[
+    "Спина ровная; наклон из таза.",
+    "Тянем локтями; пауза в пик-сокращении."
+  ],
+  "Узкие отжимания":[
+    "Локти близко к корпусу; кисти под плечами.",
+    "Корпус — прямая линия; без провиса таза."
+  ],
+  "Подъём гантелей на бицепс":[
+    "Без читинга; полная амплитуда.",
+    "Плечи неподвижны."
+  ],
+  "Разведения в наклоне":[
+    "Грудь к бедрам, спина ровная.",
+    "Лопатки сводим вверху, не дёргай корпус."
+  ],
+  "Планка с касанием плеч":[
+    "Таз нейтрален, корпус стабилен.",
+    "Минимальные колебания при касании."
+  ],
+};
+
+/* ===== Программа (3 дня) + RuTube IDs ===== */
+const PROGRAM = {
+  1:[
+    {t:"Жим штанги лёжа", base:"4×8–10", sets:4, id:"29048ced12e2808a6097447cf00821fd"},
+    {t:"Тяга блока к поясу", base:"4×8–10", sets:4, id:"e5f800727b6688c3ec31f62e48303cb0"},
+    {t:"Жим ногами", base:"4×8–10", sets:4, id:"6eb13cced1079f3c1c167ec187c0b324"},
+    {t:"Подъём штанги на бицепс", base:"3×12–16", sets:3, id:"9e19a98a96bf0fa3ed85b3d0b3e02a9d"},
+    {t:"Жим в тренажёре для плеч", base:"3×12–16", sets:3, id:"dd55b827ba26093c43756fc93e0a0468"},
+    {t:"Разгибание трицепса в блоке (канат)", base:"3×12–16", sets:3, id:"c3b414b47e814f390ffda4cd02019b4d"}
+  ],
+  2:[
+    {t:"Жим штанги лёжа на наклонной 45°", base:"4×8–10", sets:4, id:"e585b41ea1a271381fb635e813257048"},
+    {t:"Тяга блока обратным хватом", base:"4×8–10", sets:4, id:"b705869d4680dfa63bfff8831610d191"},
+    {t:"Разгибание ног в тренажёре", base:"4×8–10", sets:4, id:"f9add4e54a65649c36dc96b40e31091e"},
+    {t:"Сгибания рук в кроссовере (бицепс)", base:"3×12–16", sets:3, id:"87549fc5f5de396c2b769f8990778ede"},
+    {t:"Разведения гантелей в стороны", base:"3×12–16", sets:3, id:"6128640e54d2e669a0279310980d65cc"},
+    {t:"Отжимания на брусьях", base:"3×12–16", sets:3, id:"b8fac352889a4bd4c083d87dd4a1be10"}
+  ],
+  3:[
+    {t:"Отжимания с ногами на возвышении", base:"4×макс", sets:4, id:"8c3c63d02b943d3851527d03c5f0d70d"},
+    {t:"Жим гантелей лёжа на полу", base:"3×8–12", sets:3, id:"8727ed482623ae3a9fce393d5456de68"},
+    {t:"Тяга гантелей к поясу", base:"3×8–12", sets:3, id:"1816f401fa38ac77e8c912125728af74"},
+    {t:"Узкие отжимания", base:"3×макс", sets:3, id:"b968f2c89084c3d90b9add1da01cf39d"},
+    {t:"Подъём гантелей на бицепс", base:"3×12", sets:3, id:"2b0ae567aa5d0a00633594f26fe8bf2e"},
+    {t:"Разведения в наклоне", base:"3×12–15", sets:3, id:"5bf13c73ef01f3a4629f00982b83788d"},
+    {t:"Планка с касанием плеч", base:"3×40–60 сек", sets:3, id:"6df677885d3361d1271228208387c6bd"}
+  ]
+};
+
+// Недели (делоад −1 подход)
+const WEEKS = {
+  1:{ add:0,  note:"RIR 1–2" },
+  2:{ add:0,  note:"+5% и/или +1, RIR 0–1" },
+  3:{ add:0,  note:"+10% и/или +1–2, RIR 0" },
+  4:{ add:-1, note:"Делоад −10–20%, −1 подход, RIR 2–3" }
+};
+
+/* ===== Утилиты ===== */
+const root = document.getElementById('root');
+const weekSelect = document.getElementById('weekSelect');
+const summary = document.getElementById('summary');
+const weekSummary = document.getElementById('weekSummary');
+let day = 1;
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');day=+b.dataset.day;render();});
+weekSelect.onchange = render;
+if (window.Telegram?.WebApp) window.Telegram.WebApp.expand();
+function today(){const d=new Date(),w=["Вск","Пн","Вт","Ср","Чт","Пт","Сб"][d.getDay()],m=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"][d.getMonth()];return `${d.getDate()} ${m}, ${w}`;}
+function keyName(ex){ return `fb_${day}_${weekSelect.value}_${ex.replace(/\s+/g,'_')}`; }
+function parseNum(v){ const n=parseFloat((v||"").toString().replace(",", ".")); return isNaN(n)?0:n; }
+
+/* ===== Строка подхода ===== */
+function setRow(i,w='',r='',rir='',done=0){
+  const el=document.createElement('div'); el.className='row'; el.innerHTML=`
+    <div class="badge">${i}</div>
+    <div class="input"><input type="number" step="0.5" inputmode="decimal" placeholder="КГ" value="${w}"><span class="suffix"></span></div>
+    <div class="input"><input type="number" step="1" inputmode="numeric" placeholder="раз" value="${r}"><span class="suffix"></span></div>
+    <div class="input"><select aria-label="RIR">
+      <option value="" ${rir===''?'selected':''}>RIR</option>
+      <option value="0" ${rir==='0'?'selected':''}>0</option>
+      <option value="1" ${rir==='1'?'selected':''}>1</option>
+      <option value="2" ${rir==='2'?'selected':''}>2</option>
+      <option value="3" ${rir==='3'?'selected':''}>3</option>
+    </select></div>
+    <label class="check" title="сет выполнен"><input type="checkbox" ${done? 'checked':''}></label>`;
+  el.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',updateSummary));
+  return el;
+}
+
+/* ===== Блок техники ===== */
+function techBlock(name){
+  const wrap=document.createElement('div'); wrap.className='techWrap';
+  const btn=document.createElement('button'); btn.className='techBtn'; btn.type='button'; btn.textContent='Техника';
+  const box=document.createElement('div'); box.className='tech';
+  const tips=(TECH[name]||["Нет описания техники."]).map(t=>`<p>• ${t}</p>`).join("");
+  box.innerHTML=`<p><b>Как делать:</b></p>${tips}`;
+  btn.onclick=()=>{ box.style.display = (box.style.display==='block'?'none':'block'); };
+  wrap.appendChild(btn); wrap.appendChild(box);
+  return wrap;
+}
+
+/* ===== Карточка упражнения ===== */
+function card(ex){
+  const saved = JSON.parse(localStorage.getItem(keyName(ex.t))||'[]');
+  const add = WEEKS[weekSelect.value].add||0;
+  const baseSets = Math.max(1, ex.sets + add);
+  const last = JSON.parse(localStorage.getItem(keyName(ex.t)+'_last')||'[]');
+
+  const wrap=document.createElement('section'); wrap.className='card'; wrap.dataset.exercise=ex.t;
+  wrap.innerHTML=`
+    <div class="head">
+      <div class="left">
+        <div class="thumb">🏋️</div>
+        <div>
+          <div class="title">${ex.t}</div>
+          <div class="meta">${ex.base} • ${WEEKS[weekSelect.value].note}</div>
+          <div class="hint">${ last.length ? 'Прошлый раз: ' + last.map(s=>`${s.weight||0}×${s.reps||0}${s.rir!==''?` (RIR ${s.rir})`:''}`).join(', ') : 'Заполни и нажми «Сохранить и отправить»'}</div>
+        </div>
+      </div>
+      <div class="avatar">👤</div>
+    </div>
+    <div class="video">${ex.id?`<iframe src="https://rutube.ru/play/embed/${ex.id}" allowfullscreen></iframe>`:''}</div>
+    <div class="body">
+      <div class="history">История выполнений:</div>
+      <div class="date">${today()}</div>
+      <div class="sets"></div>
+      <div class="actions">
+        <button class="btn add" type="button">+ Подход</button>
+        <button class="btn del" type="button">− Удалить</button>
+      </div>
+    </div>`;
+
+  // техника
+  wrap.querySelector('.body').insertBefore(techBlock(ex.t), wrap.querySelector('.actions'));
+
+  const box=wrap.querySelector('.sets');
+  const count = saved.length? saved.length : baseSets;
+  for(let i=1;i<=count;i++){
+    const s=saved[i-1]||{};
+    box.appendChild(setRow(i,s.weight||'',s.reps||'', (s.rir??'').toString(), s.done?1:0));
+  }
+
+  wrap.querySelector('.add').onclick=()=>{ box.appendChild(setRow(box.children.length+1)); updateSummary(); };
+  wrap.querySelector('.del').onclick=()=>{ if(box.children.length>1){ box.lastElementChild.remove(); updateSummary(); } };
+  return wrap;
+}
+
+/* ===== Рендер и итоги ===== */
+function render(){
+  root.innerHTML='';
+  PROGRAM[day].forEach(ex=> root.appendChild(card(ex)));
+  updateSummary();
+}
+
+function updateSummary(){
+  // итоги тренировки (из формы)
+  let tonnage=0, setsDone=0;
+  root.querySelectorAll('.card').forEach(card=>{
+    card.querySelectorAll('.row').forEach(r=>{
+      const [w,rp]=r.querySelectorAll('input');
+      const weight=parseNum(w.value), reps=parseInt(rp.value||0,10);
+      const done = r.querySelector('input[type="checkbox"]').checked;
+      if(weight>0 && reps>0){
+        tonnage += weight*reps;
+        if(done) setsDone++;
+      }
+    });
+  });
+  summary.textContent = `Тоннаж: ${Math.round(tonnage)} кг • Сеты (вып.): ${setsDone}`;
+
+  // итог недели — по сохранённым данным выбранной недели (все дни/упражнения)
+  let weekTonn=0, weekSets=0;
+  Object.keys(localStorage).forEach(k=>{
+    const m=k.match(/^fb_(\d+)_(\d+)_(.+)$/);
+    if(!m) return;
+    const wk = m[2];
+    if(wk !== weekSelect.value) return;
+    const arr = JSON.parse(localStorage.getItem(k)||'[]');
+    arr.forEach(s=>{
+      const w=parseNum(s.weight), r=parseInt(s.reps||0,10);
+      if(w>0 && r>0){
+        weekTonn += w*r;
+        if(s.done) weekSets++;
+      }
+    });
+  });
+  document.getElementById('weekSummary').textContent =
+    `Итого за неделю: ${Math.round(weekTonn)} кг • сохранённых сетов: ${weekSets}`;
+}
+
+/* ===== Очистка и сохранение ===== */
+document.getElementById('clearBtn').onclick=()=>{
+  if(!confirm('Очистить все поля текущего дня?')) return;
+  render(); // чистим только текущую форму, историю не трогаем
+};
+
+document.getElementById('saveBtn').onclick=()=>{
+  const payload=[];
+  root.querySelectorAll('.card').forEach(card=>{
+    const name=card.dataset.exercise, list=[];
+    card.querySelectorAll('.row').forEach((r,i)=>{
+      const inputs=r.querySelectorAll('input');
+      const w=inputs[0], rp=inputs[1], cb=inputs[2];
+      const sel=r.querySelector('select');
+      const weight=(w.value||'').trim(), reps=(rp.value||'').trim(), rir=(sel.value??'').toString(), done=cb.checked?1:0;
+      if(weight || reps){
+        const item={set:i+1, weight, reps, rir, done};
+        list.push(item);
+        payload.push({day, week:+weekSelect.value, exercise:name, ...item, ts:new Date().toISOString()});
+      }
+    });
+    localStorage.setItem(keyName(name), JSON.stringify(list));
+    if(list.length) localStorage.setItem(keyName(name)+'_last', JSON.stringify(list)); // для «Прошлый раз»
+  });
+
+  if(window.Telegram && window.Telegram.WebApp){
+    window.Telegram.WebApp.sendData(JSON.stringify(payload));
+    window.Telegram.WebApp.close();
+  } else {
+    alert('Сохранено локально:\n'+JSON.stringify(payload,null,2));
+  }
+};
+
+/* ===== Старт ===== */
+render();
+</script>
+</body>
+</html>
